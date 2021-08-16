@@ -1,0 +1,37 @@
+{
+    "name": "touhidurabir/laravel-multi-key-route-binding",
+    "description": "A simple laravel package to handle multiple key based model route binding",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Touhidur Rahman",
+            "email": "abircse06@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Touhidurabir\\MultiKyeRouteBinding\\": "src/"
+        }
+    },
+    "autoload-dev" : {
+        "psr-4" : {
+            "Touhidurabir\\MultiKyeRouteBinding\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^6.20",
+        "illuminate/support": "^8.54"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Touhidurabir\\MultiKyeRouteBinding\\MultiKyeRouteBindingServiceProvider"
+            ],
+            "aliases": {
+                "ModelUuid": "Touhidurabir\\MultiKyeRouteBinding\\Facades\\MultiKyeRouteBinding"
+            }
+        }
+    }
+}

@@ -106,7 +106,7 @@ class LaravelIntegrationTest extends TestCase {
                 'message' => 'resource not found'
             ], 404);
 
-        })->middleware('bindings');;
+        })->middleware('bindings');
     }
 
 

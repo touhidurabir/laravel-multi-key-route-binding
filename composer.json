@@ -30,7 +30,7 @@
                 "Touhidurabir\\MultiKyeRouteBinding\\MultiKyeRouteBindingServiceProvider"
             ],
             "aliases": {
-                "ModelUuid": "Touhidurabir\\MultiKyeRouteBinding\\Facades\\MultiKyeRouteBinding"
+                "MultiKyeRouteBinding": "Touhidurabir\\MultiKyeRouteBinding\\Facades\\MultiKyeRouteBinding"
             }
         }
     }

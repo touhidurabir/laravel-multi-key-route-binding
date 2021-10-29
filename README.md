@@ -1,4 +1,4 @@
-# Laravel Model UUID
+# Laravel Multi Key Route Binding
 
 A simple package to handle the multiple key/column based route model binding for laravel package
 
@@ -52,9 +52,6 @@ public function getRouteKeyName()
     return 'slug';
 }
 ```
-
-
-
 
 > The package also provide a bit of safe guard by checking if the model table has the given binding key column . 
 >

@@ -1,9 +1,11 @@
 <?php
 
-namespace Touhidurabir\ModelUuid\Tests;
+namespace Touhidurabir\MultiKyeRouteBinding\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Orchestra\Testbench\TestCase;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Touhidurabir\MultiKyeRouteBinding\Facades\MultiKyeRouteBinding;
 use Touhidurabir\MultiKyeRouteBinding\MultiKyeRouteBindingServiceProvider;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\User;
@@ -106,13 +108,23 @@ class LaravelIntegrationTest extends TestCase {
                 'message' => 'resource not found'
             ], 404);
 
-        })->middleware('bindings');
+        })->middleware(SubstituteBindings::class);
+
+        Route::get('/users/by-email/{user:email}', function(User $user) {
+
+            return response()->json([
+                'id' => $user->id,
+                'message' => 'resource found'
+            ], 200);
+
+        })->middleware(SubstituteBindings::class);
     }
 
 
     /**
      * @test
      */
+    #[Test]
     public function the_test_route_return_200_if_model_resource_found_using_default_key_binding() {
 
         $user = User::create([
@@ -127,6 +139,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function the_test_route_return_404_if_model_resource_not_found_using_default_key_binding() {
 
         $user = User::create([
@@ -141,6 +154,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_find_model_resource_on_keybind() {
 
         $user1 = User::create([
@@ -162,6 +176,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_can_not_find_model_resource_on_keybind_if_no_match_found() {
 
         $user1 = User::create([
@@ -171,5 +186,22 @@ class LaravelIntegrationTest extends TestCase {
 
         $this->get("/users/someemail@email.com")->assertStatus(404);
         $this->get("/users/someusername")->assertStatus(404);
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function it_only_use_the_explicit_field_when_route_defines_custom_binding_key() {
+
+        $user = User::create([
+            'email'    => uniqid() . '@localhost.com',
+            'username' => uniqid() . '_username',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->get("/users/by-email/{$user->email}")->assertStatus(200)->assertJson(['id' => $user->id]);
+        $this->get("/users/by-email/{$user->username}")->assertStatus(404);
     }
 }

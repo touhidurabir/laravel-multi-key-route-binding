@@ -4,14 +4,15 @@ namespace Touhidurabir\MultiKyeRouteBinding;
 
 use Illuminate\Support\ServiceProvider;
 
-class MultiKyeRouteBindingServiceProvider extends ServiceProvider {
-    
+class MultiKyeRouteBindingServiceProvider extends ServiceProvider
+{
     /**
      * Register any application services.
      *
      * @return void
      */
-    public function register() {
+    public function register()
+    {
 
     }
 
@@ -21,8 +22,9 @@ class MultiKyeRouteBindingServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot() {
+    public function boot()
+    {
 
     }
-    
+
 }

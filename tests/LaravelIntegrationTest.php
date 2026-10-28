@@ -9,36 +9,37 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Touhidurabir\MultiKyeRouteBinding\Facades\MultiKyeRouteBinding;
 use Touhidurabir\MultiKyeRouteBinding\MultiKyeRouteBindingServiceProvider;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\User;
-use Touhidurabir\MultiKyeRouteBinding\Tests\App\Profile;
 
 /**
  *  TO-DO: Need better testing.
  *  Factories, Mocks, etc, but this does the job for now.
  */
-class LaravelIntegrationTest extends TestCase {
-
+class LaravelIntegrationTest extends TestCase
+{
     /**
      * Get package providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageProviders($app) {
+    protected function getPackageProviders($app)
+    {
 
         return [
             MultiKyeRouteBindingServiceProvider::class,
         ];
-    }   
-    
-    
+    }
+
+
     /**
      * Override application aliases.
      *
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageAliases($app) {
-        
+    protected function getPackageAliases($app)
+    {
+
         return [
             'MultiKyeRouteBinding' => MultiKyeRouteBinding::class,
         ];
@@ -51,7 +52,8 @@ class LaravelIntegrationTest extends TestCase {
      * @param  Illuminate\Foundation\Application $app
      * @return void
      */
-    protected function defineEnvironment($app) {
+    protected function defineEnvironment($app)
+    {
 
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
@@ -73,10 +75,11 @@ class LaravelIntegrationTest extends TestCase {
      *
      * @return void
      */
-    protected function defineDatabaseMigrations() {
+    protected function defineDatabaseMigrations()
+    {
 
         $this->loadMigrationsFrom(__DIR__ . '/App/database/migrations');
-        
+
         $this->artisan('migrate', ['--database' => 'testbench'])->run();
 
         $this->beforeApplicationDestroyed(function () {
@@ -92,11 +95,12 @@ class LaravelIntegrationTest extends TestCase {
      *
      * @return void
      */
-    protected function defineRoutes($router) {
-        
-        Route::get('/users/{user}', function(User $user) {
-            
-            if ( $user ) {
+    protected function defineRoutes($router)
+    {
+
+        Route::get('/users/{user}', function (User $user) {
+
+            if ($user) {
 
                 return response()->json([
                     'id' => $user->id,
@@ -110,7 +114,7 @@ class LaravelIntegrationTest extends TestCase {
 
         })->middleware(SubstituteBindings::class);
 
-        Route::get('/users/by-email/{user:email}', function(User $user) {
+        Route::get('/users/by-email/{user:email}', function (User $user) {
 
             return response()->json([
                 'id' => $user->id,
@@ -125,7 +129,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_test_route_return_200_if_model_resource_found_using_default_key_binding() {
+    public function the_test_route_return_200_if_model_resource_found_using_default_key_binding()
+    {
 
         $user = User::create([
             'email'    => uniqid() . '@localhost.com',
@@ -140,7 +145,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_test_route_return_404_if_model_resource_not_found_using_default_key_binding() {
+    public function the_test_route_return_404_if_model_resource_not_found_using_default_key_binding()
+    {
 
         $user = User::create([
             'email'    => uniqid() . '@localhost.com',
@@ -155,7 +161,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_find_model_resource_on_keybind() {
+    public function it_find_model_resource_on_keybind()
+    {
 
         $user1 = User::create([
             'email'    => uniqid() . '@localhost.com',
@@ -177,7 +184,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_can_not_find_model_resource_on_keybind_if_no_match_found() {
+    public function it_can_not_find_model_resource_on_keybind_if_no_match_found()
+    {
 
         $user1 = User::create([
             'email'    => uniqid() . '@localhost.com',
@@ -193,7 +201,8 @@ class LaravelIntegrationTest extends TestCase {
      * @test
      */
     #[Test]
-    public function it_only_use_the_explicit_field_when_route_defines_custom_binding_key() {
+    public function it_only_use_the_explicit_field_when_route_defines_custom_binding_key()
+    {
 
         $user = User::create([
             'email'    => uniqid() . '@localhost.com',

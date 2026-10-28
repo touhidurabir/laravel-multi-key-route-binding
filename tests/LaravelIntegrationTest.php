@@ -11,6 +11,9 @@ use Touhidurabir\MultiKyeRouteBinding\MultiKyeRouteBindingServiceProvider;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\User;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\Profile;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\Account;
+use Touhidurabir\MultiKyeRouteBinding\Tests\App\Member;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  *  TO-DO: Need better testing.
@@ -60,6 +63,13 @@ class LaravelIntegrationTest extends TestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ]);
+
+        // a second connection, used by models that are not on the default one
+        $app['config']->set('database.connections.secondary', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
@@ -137,6 +147,12 @@ class LaravelIntegrationTest extends TestCase
         Route::get('/accounts/{account}', function (Account $account) {
 
             return response()->json(['code' => $account->code], 200);
+
+        })->middleware(SubstituteBindings::class);
+
+        Route::get('/members/{member}', function (Member $member) {
+
+            return response()->json(['id' => $member->id], 200);
 
         })->middleware(SubstituteBindings::class);
 
@@ -316,6 +332,27 @@ class LaravelIntegrationTest extends TestCase
         $this->get("/accounts/ACC-1")->assertStatus(200)->assertJson(['code' => 'ACC-1']);
         $this->get("/accounts/account@localhost.com")->assertStatus(200)->assertJson(['code' => 'ACC-1']);
         $this->get("/accounts/ACC-2")->assertStatus(404);
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function it_checks_the_binding_key_columns_on_the_model_connection()
+    {
+
+        // the members table only exists on the model's (non default) connection
+        Schema::connection('secondary')->create('members', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('email');
+            $table->timestamps();
+        });
+
+        $member = Member::create(['email' => 'member@localhost.com']);
+
+        $this->get("/members/{$member->id}")->assertStatus(200)->assertJson(['id' => $member->id]);
+        $this->get("/members/member@localhost.com")->assertStatus(200)->assertJson(['id' => $member->id]);
     }
 
 }

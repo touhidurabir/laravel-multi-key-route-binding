@@ -137,14 +137,16 @@ trait HasMultipleRouteBindingKeys
 
         $modelTableName = $this->getTable();
 
+        $schema = Schema::connection($this->getConnectionName());
+
         // group the ORs, so they can not escape the constraints already on the query
-        return $query->where(function ($query) use ($value, $routeKeyName, $bindingKeys, $modelTableName) {
+        return $query->where(function ($query) use ($value, $routeKeyName, $bindingKeys, $modelTableName, $schema) {
 
             $query->where($this->qualifyColumn($routeKeyName), $value);
 
             foreach ($bindingKeys as $bindingKey) {
 
-                if (Schema::hasColumn($modelTableName, $bindingKey)) {
+                if ($schema->hasColumn($modelTableName, $bindingKey)) {
                     $query->orWhere($this->qualifyColumn($bindingKey), $value);
                 }
             }

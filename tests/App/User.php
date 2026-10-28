@@ -38,4 +38,11 @@ class User extends Model
         'username'
     ];
 
+
+    public function profiles()
+    {
+
+        return $this->hasMany(Profile::class);
+    }
+
 }

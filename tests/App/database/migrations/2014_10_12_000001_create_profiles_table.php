@@ -14,6 +14,7 @@ class CreateProfilesTable extends Migration
     {
         DB::connection()->getSchemaBuilder()->create('profiles', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->string('employee_number')->nullable();
             $table->string('first_name');
             $table->string('last_name');

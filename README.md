@@ -53,6 +53,8 @@ public function getRouteKeyName()
 }
 ```
 
+The extra keys are used for implicit route model binding, including routes using `->withTrashed()` and scoped child bindings (for example `/users/{user}/posts/{post}` with `->scopeBindings()`, where the lookup stays scoped to the parent). When a route names an explicit binding field, such as `{user:email}`, only that field is used.
+
 > The package also provide a bit of safe guard by checking if the model table has the given binding key column . 
 >
 > If the binding key column not found for model table schema, it will skip that binding key.

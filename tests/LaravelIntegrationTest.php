@@ -9,6 +9,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Touhidurabir\MultiKyeRouteBinding\Facades\MultiKyeRouteBinding;
 use Touhidurabir\MultiKyeRouteBinding\MultiKyeRouteBindingServiceProvider;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\User;
+use Touhidurabir\MultiKyeRouteBinding\Tests\App\Profile;
 
 /**
  *  TO-DO: Need better testing.
@@ -114,6 +115,24 @@ class LaravelIntegrationTest extends TestCase
 
         })->middleware(SubstituteBindings::class);
 
+        Route::get('/trashed-users/{user}', function (User $user) {
+
+            return response()->json(['id' => $user->id], 200);
+
+        })->middleware(SubstituteBindings::class)->withTrashed();
+
+        Route::get('/trashed-users/by-id/{user:id}', function (User $user) {
+
+            return response()->json(['id' => $user->id], 200);
+
+        })->middleware(SubstituteBindings::class)->withTrashed();
+
+        Route::get('/users/{user}/profiles/{profile}', function (User $user, Profile $profile) {
+
+            return response()->json(['id' => $profile->id], 200);
+
+        })->middleware(SubstituteBindings::class)->scopeBindings();
+
         Route::get('/users/by-email/{user:email}', function (User $user) {
 
             return response()->json([
@@ -213,4 +232,54 @@ class LaravelIntegrationTest extends TestCase
         $this->get("/users/by-email/{$user->email}")->assertStatus(200)->assertJson(['id' => $user->id]);
         $this->get("/users/by-email/{$user->username}")->assertStatus(404);
     }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function it_find_soft_deleted_model_resource_on_keybind_for_with_trashed_routes()
+    {
+
+        $user = User::create([
+            'email'    => uniqid() . '@localhost.com',
+            'username' => uniqid() . '_username',
+            'password' => bcrypt('password'),
+        ]);
+
+        $user->delete();
+
+        $this->get("/users/{$user->email}")->assertStatus(404);
+        $this->get("/trashed-users/{$user->id}")->assertStatus(200)->assertJson(['id' => $user->id]);
+        $this->get("/trashed-users/{$user->email}")->assertStatus(200)->assertJson(['id' => $user->id]);
+        $this->get("/trashed-users/{$user->username}")->assertStatus(200)->assertJson(['id' => $user->id]);
+        $this->get("/trashed-users/someusername")->assertStatus(404);
+
+        // an explicit binding field only uses that field
+        $this->get("/trashed-users/by-id/{$user->id}")->assertStatus(200)->assertJson(['id' => $user->id]);
+        $this->get("/trashed-users/by-id/{$user->email}")->assertStatus(404);
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function it_find_scoped_child_model_resource_on_keybind()
+    {
+
+        $user1 = User::create(['email' => uniqid() . '@localhost.com', 'password' => bcrypt('password')]);
+        $user2 = User::create(['email' => uniqid() . '@localhost.com', 'password' => bcrypt('password')]);
+
+        $profile1 = $user1->profiles()->create(['employee_number' => 'EMP-1', 'first_name' => 'First', 'last_name' => 'Last']);
+        $profile2 = $user2->profiles()->create(['employee_number' => 'EMP-2', 'first_name' => 'First', 'last_name' => 'Last']);
+
+        $this->get("/users/{$user1->id}/profiles/{$profile1->id}")->assertStatus(200)->assertJson(['id' => $profile1->id]);
+        $this->get("/users/{$user1->email}/profiles/EMP-1")->assertStatus(200)->assertJson(['id' => $profile1->id]);
+
+        // the multi key lookup must stay scoped to the parent
+        $this->get("/users/{$user1->id}/profiles/EMP-2")->assertStatus(404);
+        $this->get("/users/{$user1->id}/profiles/{$profile2->id}")->assertStatus(404);
+    }
+
 }

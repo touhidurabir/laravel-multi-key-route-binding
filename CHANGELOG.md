@@ -16,6 +16,9 @@ All notable changes to this project will be documented in this file.
   own route key name (its primary key by default) instead of the hard-coded `'id'`. The default is unchanged.
 - Fixed the binding key column check (`Schema::hasColumn`) using the default database connection instead of the
   model's connection, which skipped the extra keys for models on another connection.
+- Fixed the `MultiKyeRouteBinding` facade: its `multi-key-route-binding` container key was never bound, so any facade
+  call failed. It now resolves to `Touhidurabir\MultiKyeRouteBinding\RouteBindingResolver`, whose
+  `resolve($model, $value, $field = null)` finds a model the same way route model binding does.
 
 
 ## [1.0.0] - 2021-08-16

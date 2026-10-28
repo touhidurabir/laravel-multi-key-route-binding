@@ -66,6 +66,15 @@ By default the trait returns **id** from `getRouteKeyName()`, even when the mode
 protected $useModelRouteKeyName = true;
 ```
 
+The `MultiKyeRouteBinding` facade resolves a model the same way route model binding does, which is handy outside of routes:
+
+```php
+use Touhidurabir\MultiKyeRouteBinding\Facades\MultiKyeRouteBinding;
+
+MultiKyeRouteBinding::resolve(User::class, 'someone@example.com');       // by id, email or username
+MultiKyeRouteBinding::resolve(User::class, 'someone@example.com', 'email'); // only by email
+```
+
 > The package also provide a bit of safe guard by checking if the model table has the given binding key column . 
 >
 > If the binding key column not found for model table schema, it will skip that binding key.

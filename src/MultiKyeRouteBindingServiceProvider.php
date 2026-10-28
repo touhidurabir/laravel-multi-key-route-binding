@@ -14,6 +14,11 @@ class MultiKyeRouteBindingServiceProvider extends ServiceProvider
     public function register()
     {
 
+        $this->app->singleton('multi-key-route-binding', function () {
+            return new RouteBindingResolver();
+        });
+
+        $this->app->alias('multi-key-route-binding', RouteBindingResolver::class);
     }
 
 

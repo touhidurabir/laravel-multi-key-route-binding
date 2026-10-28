@@ -355,4 +355,39 @@ class LaravelIntegrationTest extends TestCase
         $this->get("/members/member@localhost.com")->assertStatus(200)->assertJson(['id' => $member->id]);
     }
 
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function the_facade_resolves_and_can_find_a_model_by_its_binding_keys()
+    {
+
+        $user = User::create([
+            'email'    => uniqid() . '@localhost.com',
+            'username' => uniqid() . '_username',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->assertTrue($user->is(MultiKyeRouteBinding::resolve(User::class, $user->id)));
+        $this->assertTrue($user->is(MultiKyeRouteBinding::resolve(User::class, $user->email)));
+        $this->assertTrue($user->is(\MultiKyeRouteBinding::resolve(new User(), $user->username)));
+        $this->assertTrue($user->is(MultiKyeRouteBinding::resolve(User::class, $user->email, 'email')));
+        $this->assertNull(MultiKyeRouteBinding::resolve(User::class, $user->username, 'email'));
+        $this->assertNull(MultiKyeRouteBinding::resolve(User::class, 'someusername'));
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function the_facade_rejects_models_not_using_the_trait()
+    {
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        MultiKyeRouteBinding::resolve(\Illuminate\Foundation\Auth\User::class, 1);
+    }
+
 }

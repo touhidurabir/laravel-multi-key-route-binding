@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+
+## [1.0.0] - 2021-08-16
+- Initial release
+
+## [1.0.1] - 2021-10-29
+- Bug fix.
+
+## [1.1.0] - 2026-10-28
 - Laravel 11, 12 and 13 support added.
 - PHPUnit 10/11/12 support for tests.
 - Tests no longer rely on the `bindings` middleware alias, which does not exist on Laravel 11+.
@@ -19,10 +28,3 @@ All notable changes to this project will be documented in this file.
 - Fixed the `MultiKyeRouteBinding` facade: its `multi-key-route-binding` container key was never bound, so any facade
   call failed. It now resolves to `Touhidurabir\MultiKyeRouteBinding\RouteBindingResolver`, whose
   `resolve($model, $value, $field = null)` finds a model the same way route model binding does.
-
-
-## [1.0.0] - 2021-08-16
-- Initial release
-
-## [1.0.1] - 2021-10-29
-- Bug fix.

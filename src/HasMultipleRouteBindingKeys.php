@@ -27,6 +27,9 @@ use Illuminate\Support\Facades\Schema;
 |      'column2',
 | ];
 |
+| The route key is 'id' by default. Set $useModelRouteKeyName = true to use
+| the model's own route key name (its primary key) instead.
+|
 */
 trait HasMultipleRouteBindingKeys
 {
@@ -47,10 +50,19 @@ trait HasMultipleRouteBindingKeys
     /**
      * Get the route key for the model.
      *
+     * Returns 'id' by default. Set the model property $useModelRouteKeyName
+     * to true to use the model's own route key name instead (its primary key,
+     * unless a parent class customises it).
+     *
      * @return string
      */
     public function getRouteKeyName()
     {
+
+        if (property_exists($this, 'useModelRouteKeyName') && $this->useModelRouteKeyName === true) {
+
+            return parent::getRouteKeyName();
+        }
 
         return 'id';
     }

@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
   now overrides `resolveRouteBindingQuery()`, which Laravel uses for every binding path.
 - The route key and extra binding key conditions are now grouped in a nested `where (... or ...)`, so they can not
   escape other constraints on the query, such as the parent constraint of a scoped child binding.
+- Added the opt-in `$useModelRouteKeyName` model property. When it is `true`, `getRouteKeyName()` returns the model's
+  own route key name (its primary key by default) instead of the hard-coded `'id'`. The default is unchanged.
 
 
 ## [1.0.0] - 2021-08-16

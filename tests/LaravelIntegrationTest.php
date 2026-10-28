@@ -10,6 +10,7 @@ use Touhidurabir\MultiKyeRouteBinding\Facades\MultiKyeRouteBinding;
 use Touhidurabir\MultiKyeRouteBinding\MultiKyeRouteBindingServiceProvider;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\User;
 use Touhidurabir\MultiKyeRouteBinding\Tests\App\Profile;
+use Touhidurabir\MultiKyeRouteBinding\Tests\App\Account;
 
 /**
  *  TO-DO: Need better testing.
@@ -132,6 +133,12 @@ class LaravelIntegrationTest extends TestCase
             return response()->json(['id' => $profile->id], 200);
 
         })->middleware(SubstituteBindings::class)->scopeBindings();
+
+        Route::get('/accounts/{account}', function (Account $account) {
+
+            return response()->json(['code' => $account->code], 200);
+
+        })->middleware(SubstituteBindings::class);
 
         Route::get('/users/by-email/{user:email}', function (User $user) {
 
@@ -280,6 +287,35 @@ class LaravelIntegrationTest extends TestCase
         // the multi key lookup must stay scoped to the parent
         $this->get("/users/{$user1->id}/profiles/EMP-2")->assertStatus(404);
         $this->get("/users/{$user1->id}/profiles/{$profile2->id}")->assertStatus(404);
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function the_route_key_name_is_id_by_default()
+    {
+
+        $this->assertSame('id', (new User())->getRouteKeyName());
+        $this->assertSame('id', (new Profile())->getRouteKeyName());
+    }
+
+
+    /**
+     * @test
+     */
+    #[Test]
+    public function it_can_opt_in_to_use_the_model_route_key_name()
+    {
+
+        $account = Account::create(['code' => 'ACC-1', 'email' => 'account@localhost.com']);
+
+        $this->assertSame('code', $account->getRouteKeyName());
+
+        $this->get("/accounts/ACC-1")->assertStatus(200)->assertJson(['code' => 'ACC-1']);
+        $this->get("/accounts/account@localhost.com")->assertStatus(200)->assertJson(['code' => 'ACC-1']);
+        $this->get("/accounts/ACC-2")->assertStatus(404);
     }
 
 }

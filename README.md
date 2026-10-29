@@ -53,6 +53,28 @@ public function getRouteKeyName()
 }
 ```
 
+The extra keys are used for implicit route model binding, including routes using `->withTrashed()` and scoped child bindings (for example `/users/{user}/posts/{post}` with `->scopeBindings()`, where the lookup stays scoped to the parent). When a route names an explicit binding field, such as `{user:email}`, only that field is used.
+
+By default the trait returns **id** from `getRouteKeyName()`, even when the model has a different primary key. To use the model's own route key name instead (its primary key, for example **uuid** or **code**), opt in with the `$useModelRouteKeyName` property:
+
+```php
+/**
+ * Use the model's own route key name (its primary key) instead of 'id'
+ *
+ * @var bool
+ */
+protected $useModelRouteKeyName = true;
+```
+
+The `MultiKyeRouteBinding` facade resolves a model the same way route model binding does, which is handy outside of routes:
+
+```php
+use Touhidurabir\MultiKyeRouteBinding\Facades\MultiKyeRouteBinding;
+
+MultiKyeRouteBinding::resolve(User::class, 'someone@example.com');       // by id, email or username
+MultiKyeRouteBinding::resolve(User::class, 'someone@example.com', 'email'); // only by email
+```
+
 > The package also provide a bit of safe guard by checking if the model table has the given binding key column . 
 >
 > If the binding key column not found for model table schema, it will skip that binding key.

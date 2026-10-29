@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Touhidurabir\MultiKyeRouteBinding\HasMultipleRouteBindingKeys;
 
-class User extends Model {
-
+class User extends Model
+{
     use SoftDeletes;
 
     use HasMultipleRouteBindingKeys;
@@ -37,5 +37,12 @@ class User extends Model {
         'email',
         'username'
     ];
+
+
+    public function profiles()
+    {
+
+        return $this->hasMany(Profile::class);
+    }
 
 }

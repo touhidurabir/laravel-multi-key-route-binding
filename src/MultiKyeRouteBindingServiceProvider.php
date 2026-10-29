@@ -4,15 +4,21 @@ namespace Touhidurabir\MultiKyeRouteBinding;
 
 use Illuminate\Support\ServiceProvider;
 
-class MultiKyeRouteBindingServiceProvider extends ServiceProvider {
-    
+class MultiKyeRouteBindingServiceProvider extends ServiceProvider
+{
     /**
      * Register any application services.
      *
      * @return void
      */
-    public function register() {
+    public function register()
+    {
 
+        $this->app->singleton('multi-key-route-binding', function () {
+            return new RouteBindingResolver();
+        });
+
+        $this->app->alias('multi-key-route-binding', RouteBindingResolver::class);
     }
 
 
@@ -21,8 +27,9 @@ class MultiKyeRouteBindingServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot() {
+    public function boot()
+    {
 
     }
-    
+
 }
